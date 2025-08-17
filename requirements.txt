@@ -1,0 +1,10 @@
+# requirements.txt for Autonomous Ticket Categorization Agent
+pandas
+numpy
+sentence-transformers
+ollama
+openpyxl
+scikit-learn
+python-dotenv
+requests
+azure-ai-inference

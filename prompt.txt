@@ -1,0 +1,67 @@
+# PROJECT: Autonomous Ticket Categorization Agent
+# GOAL: Build an AI Agent in Python that reads an Excel file with incident tickets, categorizes them based on issue type,
+# and maintains a persistent memory of categories. It should run autonomously, deciding which function to call at each step.
+
+# MODELS & TOOLS:
+# - Embeddings: sentence-transformers (for similarity matching)
+# - LLM: DeepSeek R1 via Ollama (for naming categories, deciding merges, adjusting thresholds)
+# - Data handling: pandas, numpy
+# - Storage: JSON or SQLite for persistent memory
+
+# AUTONOMY REQUIREMENTS:
+# - Agent should decide dynamically whether to assign, create, merge, rename, or adjust thresholds.
+# - Avoid fixed step sequences; use a decision engine.
+# - Minimize LLM calls by relying on embeddings for similarity first.
+# - Merge similar categories automatically without human input.
+# - Update persistent category memory after every decision.
+# - Continue until all tickets processed, then output:
+#    1. Categorized Excel file
+#    2. Updated category memory
+
+# FLOWCHART:
+# 1. Load tickets from Excel
+# 2. Load category memory
+# 3. While there are unprocessed tickets OR optimizations possible:
+#       a. Decide next action (assign, create, merge, rename, adjust threshold)
+#       b. Execute action
+#       c. Update category memory
+#       d. Save progress
+# 4. Export final categorized Excel + updated memory
+
+# CORE FUNCTIONS NEEDED:
+# - load_tickets(file_path) -> DataFrame
+# - load_memory(memory_path) -> dict
+# - save_memory(memory_path, memory)
+# - get_embedding(text) -> list[float]
+# - assign_ticket_to_category(ticket, memory, threshold)
+# - create_category(ticket, memory)
+# - merge_categories(cat_a, cat_b, memory)
+# - rename_category(cat, memory)
+# - adjust_threshold(memory, current_threshold) -> float
+# - decide_next_action(state) -> str (one of "assign", "create", "merge", "rename", "adjust_threshold")
+
+# FILE STRUCTURE: Note: empty Files of the following names are already created
+# project_root/
+# ├── agent.py             # Agent loop, orchestrates everything
+# ├── memory.py            # Functions to load/save memory
+# ├── categorization.py    # assign/create/merge/rename category logic
+# ├── embeddings.py        # Embedding model loading and get_embedding()
+# ├── decision.py          # Decision engine logic
+# ├── llm.py               # Wrapper for calling DeepSeek R1 via Ollama
+# ├── requirements.txt     # Dependencies
+# └── data/
+#     ├── tickets.xlsx
+#     └── category_memory.json
+
+# PROMPT EXAMPLES FOR LLM CALLS:
+# 1. Category Naming:
+#    "You are an AI helping categorize IT incident tickets. Given the following tickets: {ticket_list}, suggest a concise category name under 5 words."
+#
+# 2. Merge Decision:
+#    "Category A: {name_a}, Tickets: {examples_a} | Category B: {name_b}, Tickets: {examples_b}. Should these be merged? Respond YES or NO."
+#
+# 3. Threshold Adjustment:
+#    "Current similarity threshold: {current_threshold}. Categories: {num_categories}, Avg tickets/category: {avg_tickets_per_category}. Respond with INCREASE / DECREASE / KEEP."
+
+# TASK FOR COPILOT:
+# Implement all core functions, then implement the main agent loop following the flowchart. Ensure decision-making is dynamic and based on state.
